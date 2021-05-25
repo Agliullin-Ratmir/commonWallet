@@ -24,6 +24,12 @@ class RecordService @Autowired constructor(
         return recordRepository.findAllByWallet(wallet)
     }
 
+    fun getRecordById(id: String): RecordDto? {
+        var record: Record? = recordRepository.findById(id)
+            .orElse(null)
+        return record?.let { recordMapper.toDto(it) }
+    }
+
     fun createNewRecord(recordCreateDto: RecordCreateDto): RecordDto {
         var record = recordMapper.toEntity(recordCreateDto)
         recordRepository.save(record)

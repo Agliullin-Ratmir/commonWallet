@@ -25,4 +25,9 @@ class RecordController @Autowired constructor(
     fun createNewRecord(@RequestBody userId: String, @RequestBody recordId: String) : String {
         return recordService.deleteRecord(userId, recordId)
     }
+
+    @GetMapping("get")
+    fun getRecordInfo(@RequestParam id : String) : RecordDto? {
+        return recordService.getRecordById(id)
+    }
 }

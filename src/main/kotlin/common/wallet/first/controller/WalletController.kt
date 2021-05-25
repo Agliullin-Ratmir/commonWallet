@@ -1,9 +1,11 @@
 package common.wallet.first.controller
 
+import common.wallet.first.dto.InviteCodeDto
 import common.wallet.first.dto.RecordDto
 import common.wallet.first.dto.WalletCreateDto
 import common.wallet.first.dto.WalletDto
 import common.wallet.first.entity.Wallet
+import common.wallet.first.service.InviteCodeService
 import common.wallet.first.service.UserService
 import common.wallet.first.service.WalletService
 import org.springframework.beans.factory.annotation.Autowired
@@ -12,7 +14,9 @@ import org.springframework.web.bind.annotation.*
 @RestController
 @RequestMapping("wallet")
 class WalletController @Autowired constructor(
-    private val walletService: WalletService) {
+    private val walletService: WalletService,
+    private val inviteCodeService: InviteCodeService
+) {
 
     @PostMapping("new")
     fun createNewWallet(@RequestBody walletCreateDto: WalletCreateDto): WalletDto {
@@ -32,5 +36,10 @@ class WalletController @Autowired constructor(
     @GetMapping("deleteWallet")
     fun deleteWallet(@RequestParam userId : String, @RequestParam walletId : String): String {
         return walletService.deleteWallet(userId, walletId)
+    }
+
+    @PutMapping("subscribe")
+    fun subscribeToWallet(@RequestParam walletId : String): InviteCodeDto {
+        return inviteCodeService.addNewInviteCode(walletId)
     }
 }
