@@ -8,5 +8,6 @@ import java.util.*
 @Repository
 interface UserRepository : MongoRepository<User, String> {
     override fun findById(id: String): Optional<User>
+    fun findByUuid(uuid: String): Optional<User>
     fun findByFirstName(firstName: String): Optional<User>
 }

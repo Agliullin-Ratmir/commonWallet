@@ -33,10 +33,6 @@ class UserService @Autowired constructor(
         userRepository.save(user)
     }
 
-    fun getUserById(id: String): User {
-        return userRepository.findById(id).get()
-    }
-
     fun getUserByFirstName(firstName: String): User {
         return userRepository.findByFirstName(firstName).get()
     }
@@ -47,13 +43,13 @@ class UserService @Autowired constructor(
         return userMapper.toDto(user)
     }
 
-    fun getTotalSumForUser(id: String): Double {
-        val user = userRepository.findById(id).get()
+    fun getTotalSumForUser(uuid : String): Double {
+        val user = userRepository.findByUuid(uuid).get()
         return walletService.getTotalSumOfWalletsForUser(user)
     }
 
-    fun getWalletsSubscriptions(id: String): List<WalletSubscriptionDto> {
-        val user = userRepository.findById(id).get()
+    fun getWalletsSubscriptions(uuid : String): List<WalletSubscriptionDto> {
+        val user = userRepository.findByUuid(uuid).get()
         return walletService.getWalletsSubscriptions(user)
     }
 }

@@ -30,7 +30,6 @@ class WalletService @Autowired constructor(
     private val recordService: RecordService
 ) {
 
-
     fun getWalletsByOwner(owner : User) : List<Wallet> {
         return walletRepository.findAllByOwner(owner)
     }
@@ -43,8 +42,8 @@ class WalletService @Autowired constructor(
         return walletRepository.findAllByUsersIn(user)
     }
 
-    fun getAllWalletsByUser(id: String): List<Wallet> {
-        var user = userRepository.findById(id)
+    fun getAllWalletsByUser(uuid: String): List<Wallet> {
+        var user = userRepository.findByUuid(uuid)
         var wallets = mutableListOf<Wallet>()
         wallets.addAll(getWalletsByOwner(user.get()))
         wallets.addAll(getWalletsByAdmin(user.get()))
@@ -58,14 +57,14 @@ class WalletService @Autowired constructor(
         return walletMapper.toDto(wallet)
     }
 
-    fun getAllRecordsInWallet(id: String): List<RecordDto> {
-        var wallet = walletRepository.findById(id).get()
+    fun getAllRecordsInWallet(uuid: String): List<RecordDto> {
+        var wallet = walletRepository.findByUuid(uuid).get()
         return recordService.getRecordsByWallet(wallet)
             .stream().map { recordMapper.toDto(it) }.toList()
     }
 
-    fun getTotalSumOfWallet(id: String): Double {
-        val wallet = walletRepository.findById(id).get()
+    fun getTotalSumOfWallet(uuid: String): Double {
+        val wallet = walletRepository.findByUuid(uuid).get()
         val sum = recordService.getRecordsByWallet(wallet)
             .stream().map { it.sum }.reduce { sum, element -> sum + element }
         return sum.orElse(0.0)
@@ -74,34 +73,34 @@ class WalletService @Autowired constructor(
     fun getTotalSumOfWalletsForUser(user: User): Double {
         var sum = 0.0
         sum += walletRepository.findAllByOwner(user).stream()
-            .mapToDouble { getTotalSumOfWallet(it.id.toString()) }.sum()
+            .mapToDouble { getTotalSumOfWallet(it.uuid.toString()) }.sum()
         sum += walletRepository.findAllByUsersIn(user).stream()
-            .mapToDouble { getTotalSumOfWallet(it.id.toString()) }.sum()
+            .mapToDouble { getTotalSumOfWallet(it.uuid.toString()) }.sum()
         sum += walletRepository.findAllByAdminsIn(user).stream()
-            .mapToDouble { getTotalSumOfWallet(it.id.toString()) }.sum()
+            .mapToDouble { getTotalSumOfWallet(it.uuid.toString()) }.sum()
         return sum
     }
 
-    fun deleteWallet(userId: String, walletId: String): String {
-        var user = userRepository.findById(userId).get()
-        val wallet = walletRepository.findById(walletId).get()
-        if (wallet.owner.id.equals(user.id)) {
-            walletRepository.deleteById(walletId)
+    fun deleteWallet(userUuid: String, walletUuid: String): String {
+        var user = userRepository.findByUuid(userUuid).get()
+        val wallet = walletRepository.findByUuid(walletUuid).get()
+        if (wallet.owner.uuid.equals(user.uuid)) {
+            walletRepository.deleteByUuid(walletUuid)
             return DeleteStatus.OK.name
         }
         return DeleteStatus.NO_PERMISSION.name
     }
 
     fun getWalletsSubscriptions(user: User): List<WalletSubscriptionDto> {
-        var walletsList = getAllWalletsByUser(user.id.toString())
+        var walletsList = getAllWalletsByUser(user.uuid.toString())
         return walletsList.stream()
-            .map { walletMapper.toSubscriptionDto(it, getUserType(user, it), getTotalSumOfWallet(it.id.toString())) }
+            .map { walletMapper.toSubscriptionDto(it, getUserType(user, it), getTotalSumOfWallet(it.uuid.toString())) }
             .toList()
     }
 
     fun getUserType(user: User, wallet: Wallet): WalletSubscriberType {
         when {
-            wallet.owner.id.equals(user.id) -> {
+            wallet.owner.uuid.equals(user.uuid) -> {
                 return WalletSubscriberType.OWNER
             }
             wallet.admins.contains(user) -> {

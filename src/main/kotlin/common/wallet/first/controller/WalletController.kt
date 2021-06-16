@@ -24,22 +24,22 @@ class WalletController @Autowired constructor(
     }
 
     @GetMapping("recordsOfWallet")
-    fun createNewWallet(@RequestParam id : String): List<RecordDto> {
-        return walletService.getAllRecordsInWallet(id)
+    fun createNewWallet(@RequestParam uuid : String): List<RecordDto> {
+        return walletService.getAllRecordsInWallet(uuid)
     }
 
     @GetMapping("totalSum")
-    fun getTotalSumOfWallet(@RequestParam id : String): Double {
-        return walletService.getTotalSumOfWallet(id)
+    fun getTotalSumOfWallet(@RequestParam uuid : String): Double {
+        return walletService.getTotalSumOfWallet(uuid)
     }
 
     @GetMapping("deleteWallet")
-    fun deleteWallet(@RequestParam userId : String, @RequestParam walletId : String): String {
-        return walletService.deleteWallet(userId, walletId)
+    fun deleteWallet(@RequestParam userUuid : String, @RequestParam walletUuid : String): String {
+        return walletService.deleteWallet(userUuid, walletUuid)
     }
 
     @PutMapping("subscribe")
-    fun subscribeToWallet(@RequestParam walletId : String): InviteCodeDto {
-        return inviteCodeService.addNewInviteCode(walletId)
+    fun subscribeToWallet(@RequestParam walletUuid : String): InviteCodeDto {
+        return inviteCodeService.addNewInviteCode(walletUuid)
     }
 }

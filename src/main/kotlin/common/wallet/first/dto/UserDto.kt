@@ -7,7 +7,7 @@ import java.util.*
 
 data class UserDto(
     @JsonProperty("id") var id: ObjectId,
-    @JsonProperty("uuid") var uuid: UUID,
+    @JsonProperty("uuid") var uuid: String,
     @JsonProperty("firstName") var firstName: String,
     @JsonProperty("lastName") var lastName: String,
     @JsonProperty("createdDate") var createdDate: LocalDateTime

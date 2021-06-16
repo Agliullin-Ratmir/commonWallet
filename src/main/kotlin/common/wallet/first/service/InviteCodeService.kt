@@ -17,8 +17,8 @@ class InviteCodeService @Autowired constructor(
 
     val MILL_SECONDS_IN_DAY = 3600 * 24 * 1000
 
-    fun addNewInviteCode(walletId: String): InviteCodeDto {
-        var wallet = walletRepository.findById(walletId).orElseThrow()
+    fun addNewInviteCode(walletUuid : String): InviteCodeDto {
+        var wallet = walletRepository.findByUuid(walletUuid).orElseThrow()
         var code = InviteCode()
         code.wallet = wallet
         code.expiredDate = System.currentTimeMillis() + MILL_SECONDS_IN_DAY.toLong()

@@ -11,7 +11,7 @@ import java.util.*
 class Wallet (
     @Id
     var id: ObjectId = ObjectId.get(),
-    var uuid: UUID = UUID.randomUUID(),
+    var uuid: String = UUID.randomUUID().toString(),
     var title: String = "",
     var description: String = "",
     var owner: User = User(),

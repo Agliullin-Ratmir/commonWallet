@@ -8,7 +8,7 @@ import java.util.UUID
 
 data class RecordDto(
     @JsonProperty("id") var id: ObjectId,
-    @JsonProperty("uuid") var uuid: UUID,
+    @JsonProperty("uuid") var uuid: String,
     @JsonProperty("user") var user: User,
     @JsonProperty("title") var title: String,
     @JsonProperty("sum") var sum: Double,

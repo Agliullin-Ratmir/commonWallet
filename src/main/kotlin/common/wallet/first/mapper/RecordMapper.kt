@@ -2,14 +2,7 @@ package common.wallet.first.mapper
 
 import common.wallet.first.dto.RecordCreateDto
 import common.wallet.first.dto.RecordDto
-import common.wallet.first.dto.UserCreateDto
-import common.wallet.first.dto.UserDto
-import common.wallet.first.dto.WalletCreateDto
-import common.wallet.first.dto.WalletDto
 import common.wallet.first.entity.Record
-import common.wallet.first.entity.User
-import common.wallet.first.entity.Wallet
-import common.wallet.first.repository.RecordRepository
 import common.wallet.first.repository.UserRepository
 import common.wallet.first.repository.WalletRepository
 import org.springframework.beans.factory.annotation.Autowired
@@ -34,8 +27,8 @@ class RecordMapper @Autowired constructor(
     }
 
     fun toEntity(record: RecordCreateDto): Record {
-        val user = userRepository.findById(record.userId.toString())
-        val wallet = walletRepository.findById(record.walletId.toString())
+        val user = userRepository.findByUuid(record.userUuid.toString())
+        val wallet = walletRepository.findByUuid(record.walletUuid.toString())
         return Record(
             user = user.get(),
             wallet = wallet.get(),

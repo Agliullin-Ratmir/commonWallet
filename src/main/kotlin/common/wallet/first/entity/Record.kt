@@ -10,7 +10,7 @@ import java.util.*
 class Record (
     @Id
     var id: ObjectId = ObjectId.get(),
-    var uuid: UUID = UUID.randomUUID(),
+    var uuid: String = UUID.randomUUID().toString(),
     var user: User = User(),
     var title: String = "",
     var sum: Double = 0.0,

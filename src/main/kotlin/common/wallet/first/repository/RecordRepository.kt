@@ -9,6 +9,7 @@ import java.util.*
 
 @Repository
 interface RecordRepository : MongoRepository<Record, String> {
-
+    fun findByUuid(uuid: String): Optional<Record>
+    fun deleteByUuid(uuid: String)
     fun findAllByWallet(wallet: Wallet) : List<Record>
 }

@@ -10,7 +10,7 @@ import java.util.*
 class InviteCode (
     @Id
     var id: ObjectId = ObjectId.get(),
-    var uuid: UUID = UUID.randomUUID(),
+    var uuid: String = UUID.randomUUID().toString(),
     var content: String? = null,
     var wallet: Wallet = Wallet(),
     var expiredDate: Long = System.currentTimeMillis(),

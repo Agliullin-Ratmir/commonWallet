@@ -30,12 +30,12 @@ class UserController @Autowired constructor(
     }
 
     @GetMapping("totalSum")
-    fun getTotalSum(@RequestParam id : String) : Double {
-        return userService.getTotalSumForUser(id)
+    fun getTotalSum(@RequestParam uuid : String) : Double {
+        return userService.getTotalSumForUser(uuid)
     }
 
     @GetMapping("subscriptions")
-    fun getWalletsSubscriptions(@RequestParam id : String): List<WalletSubscriptionDto> {
-        return userService.getWalletsSubscriptions(id)
+    fun getWalletsSubscriptions(@RequestParam uuid : String): List<WalletSubscriptionDto> {
+        return userService.getWalletsSubscriptions(uuid)
     }
 }

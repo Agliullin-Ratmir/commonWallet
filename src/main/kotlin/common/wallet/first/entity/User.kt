@@ -10,7 +10,7 @@ import java.util.*
 class User (
     @Id
     var id: ObjectId = ObjectId.get(),
-    var uuid: UUID = UUID.randomUUID(),
+    var uuid: String = UUID.randomUUID().toString(),
     var firstName: String = "",
     var lastName: String = "",
     var createdDate: LocalDateTime = LocalDateTime.now()

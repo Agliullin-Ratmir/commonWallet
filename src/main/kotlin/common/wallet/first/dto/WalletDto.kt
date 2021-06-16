@@ -8,7 +8,7 @@ import java.util.*
 
 data class WalletDto(
     @JsonProperty("id") var id: ObjectId,
-    @JsonProperty("uuid") var uuid: UUID,
+    @JsonProperty("uuid") var uuid: String,
     @JsonProperty("title") var title: String,
     @JsonProperty("description") var description: String,
     @JsonProperty("owner") var owner: User,
