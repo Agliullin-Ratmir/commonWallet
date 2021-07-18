@@ -10,6 +10,7 @@ import java.util.*
 @Repository
 interface RecordRepository : MongoRepository<Record, String> {
     fun findByUuid(uuid: String): Optional<Record>
+    fun findByUuidIsIn(uuids: MutableList<String>): MutableList<Record>
     fun deleteByUuid(uuid: String)
-    fun findAllByWallet(wallet: Wallet) : List<Record>
+    fun findAllByWalletUuid(walletUuid: String) : List<Record>
 }

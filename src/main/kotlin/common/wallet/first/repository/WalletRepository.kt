@@ -11,7 +11,7 @@ interface WalletRepository : MongoRepository<Wallet, String> {
     override fun findById(id: String): Optional<Wallet>
     fun deleteByUuid(uuid: String)
     fun findByUuid(uuid: String): Optional<Wallet>
-    fun findAllByOwner(user: User): List<Wallet>
-    fun findAllByAdminsIn(user: User): List<Wallet>
-    fun findAllByUsersIn(user: User): List<Wallet>
+    fun findAllByOwnerUuid(ownerUuid: String): List<Wallet>
+    fun findAllByAdminsUuidIn(adminUuid: String): List<Wallet>
+    fun findAllByUsersUuidIn(userUuid: String): List<Wallet>
 }

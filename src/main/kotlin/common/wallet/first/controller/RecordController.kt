@@ -1,5 +1,6 @@
 package common.wallet.first.controller
 
+import common.wallet.first.dto.EditRecordDto
 import common.wallet.first.dto.RecordCreateDto
 import common.wallet.first.dto.RecordDto
 import common.wallet.first.service.RecordService
@@ -12,17 +13,22 @@ class RecordController @Autowired constructor(
     private val recordService: RecordService) {
 
     @PostMapping("new")
-    fun createNewRecord(@RequestBody recordCreateDto: RecordCreateDto) : RecordDto {
+    fun createNewRecord(@RequestBody recordCreateDto: RecordCreateDto) : RecordDto? {
         return recordService.createNewRecord(recordCreateDto)
     }
 
     @PutMapping("deleteRecord")
-    fun createNewRecord(@RequestBody userUuid: String, @RequestBody recordUuid: String) : String {
+    fun deleteRecord(@RequestBody userUuid: String, @RequestBody recordUuid: String) : String {
         return recordService.deleteRecord(userUuid, recordUuid)
     }
 
-    @GetMapping("get")
-    fun getRecordInfo(@RequestParam uuid : String) : RecordDto? {
-        return recordService.getRecordByUuid(uuid)
+    @PostMapping("get")
+    fun getRecordInfo(@RequestParam recordUuid : String, @RequestBody userUuid: String) : RecordDto? {
+        return recordService.getRecordByUuid(recordUuid, userUuid)
+    }
+
+    @PutMapping("edit")
+    fun editRecord(@RequestParam userUuid: String, @RequestBody dto: EditRecordDto) : String {
+        return recordService.editRecord(userUuid, dto)
     }
 }

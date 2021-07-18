@@ -1,5 +1,5 @@
 package common.wallet.first.enum
 
-enum class DeleteStatus {
+enum class AnswerStatus {
     OK, NO_PERMISSION
 }

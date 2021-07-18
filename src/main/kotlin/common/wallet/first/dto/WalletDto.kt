@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import common.wallet.first.entity.Record
 import common.wallet.first.entity.User
 import org.bson.types.ObjectId
-import java.util.*
 
 data class WalletDto(
     @JsonProperty("id") var id: ObjectId,

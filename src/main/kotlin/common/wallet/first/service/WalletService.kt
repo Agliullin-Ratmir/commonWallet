@@ -1,24 +1,20 @@
 package common.wallet.first.service
 
-import common.wallet.first.FirstApplication
+import common.wallet.first.dto.EditWalletDto
 import common.wallet.first.dto.RecordDto
 import common.wallet.first.dto.WalletCreateDto
 import common.wallet.first.dto.WalletDto
 import common.wallet.first.dto.WalletSubscriptionDto
 import common.wallet.first.entity.User
 import common.wallet.first.entity.Wallet
-import common.wallet.first.enum.DeleteStatus
+import common.wallet.first.enum.AnswerStatus
 import common.wallet.first.enum.WalletSubscriberType
 import common.wallet.first.mapper.RecordMapper
-import common.wallet.first.mapper.UserMapper
 import common.wallet.first.mapper.WalletMapper
-import common.wallet.first.repository.RecordRepository
 import common.wallet.first.repository.UserRepository
 import common.wallet.first.repository.WalletRepository
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.runApplication
 import org.springframework.stereotype.Service
-import java.util.*
 import kotlin.streams.toList
 
 @Service
@@ -31,15 +27,15 @@ class WalletService @Autowired constructor(
 ) {
 
     fun getWalletsByOwner(owner : User) : List<Wallet> {
-        return walletRepository.findAllByOwner(owner)
+        return walletRepository.findAllByOwnerUuid(owner.uuid)
     }
 
     fun getWalletsByAdmin(admin : User) : List<Wallet> {
-        return walletRepository.findAllByAdminsIn(admin)
+        return walletRepository.findAllByAdminsUuidIn(admin.uuid)
     }
 
     fun getWalletsByUser(user: User): List<Wallet> {
-        return walletRepository.findAllByUsersIn(user)
+        return walletRepository.findAllByUsersUuidIn(user.uuid)
     }
 
     fun getAllWalletsByUser(uuid: String): List<Wallet> {
@@ -57,59 +53,90 @@ class WalletService @Autowired constructor(
         return walletMapper.toDto(wallet)
     }
 
-    fun getAllRecordsInWallet(uuid: String): List<RecordDto> {
-        var wallet = walletRepository.findByUuid(uuid).get()
-        return recordService.getRecordsByWallet(wallet)
-            .stream().map { recordMapper.toDto(it) }.toList()
+    fun getAllRecordsInWallet(walletUuid: String, userUuid: String): List<RecordDto> {
+        var wallet = walletRepository.findByUuid(walletUuid).orElseThrow()
+        if (!WalletSubscriberType.UNRECOGNIZED.equals(getUserType(userUuid, wallet))) {
+            return recordService.getRecordsByWallet(wallet)
+                .stream().map { recordMapper.toDto(it) }.toList()
+        }
+        return emptyList()
     }
 
-    fun getTotalSumOfWallet(uuid: String): Double {
-        val wallet = walletRepository.findByUuid(uuid).get()
-        val sum = recordService.getRecordsByWallet(wallet)
-            .stream().map { it.sum }.reduce { sum, element -> sum + element }
-        return sum.orElse(0.0)
+    fun getTotalSumOfWallet(walletUuid: String, userUuid: String): Double {
+        val wallet = walletRepository.findByUuid(walletUuid).get()
+        if (!WalletSubscriberType.UNRECOGNIZED.equals(getUserType(userUuid, wallet))) {
+            val sum = recordService.getRecordsByWallet(wallet)
+                .stream().map { it.sum }.reduce { sum, element -> sum + element }
+            return sum.orElse(0.0)
+        }
+        return 0.0
     }
 
     fun getTotalSumOfWalletsForUser(user: User): Double {
         var sum = 0.0
-        sum += walletRepository.findAllByOwner(user).stream()
-            .mapToDouble { getTotalSumOfWallet(it.uuid.toString()) }.sum()
-        sum += walletRepository.findAllByUsersIn(user).stream()
-            .mapToDouble { getTotalSumOfWallet(it.uuid.toString()) }.sum()
-        sum += walletRepository.findAllByAdminsIn(user).stream()
-            .mapToDouble { getTotalSumOfWallet(it.uuid.toString()) }.sum()
+        sum += walletRepository.findAllByOwnerUuid(user.uuid).stream()
+            .mapToDouble { getTotalSumOfWallet(it.uuid, user.uuid) }.sum()
+        sum += walletRepository.findAllByUsersUuidIn(user.uuid).stream()
+            .mapToDouble { getTotalSumOfWallet(it.uuid, user.uuid) }.sum()
+        sum += walletRepository.findAllByAdminsUuidIn(user.uuid).stream()
+            .mapToDouble { getTotalSumOfWallet(it.uuid, user.uuid) }.sum()
         return sum
     }
 
     fun deleteWallet(userUuid: String, walletUuid: String): String {
-        var user = userRepository.findByUuid(userUuid).get()
         val wallet = walletRepository.findByUuid(walletUuid).get()
-        if (wallet.owner.uuid.equals(user.uuid)) {
+        if (wallet.ownerUuid.equals(userUuid)) {
             walletRepository.deleteByUuid(walletUuid)
-            return DeleteStatus.OK.name
+            return AnswerStatus.OK.name
         }
-        return DeleteStatus.NO_PERMISSION.name
+        return AnswerStatus.NO_PERMISSION.name
     }
 
-    fun getWalletsSubscriptions(user: User): List<WalletSubscriptionDto> {
-        var walletsList = getAllWalletsByUser(user.uuid.toString())
+    fun getWalletsSubscriptions(userUuid: String): List<WalletSubscriptionDto> {
+        var walletsList = getAllWalletsByUser(userUuid)
         return walletsList.stream()
-            .map { walletMapper.toSubscriptionDto(it, getUserType(user, it), getTotalSumOfWallet(it.uuid.toString())) }
+            .map { walletMapper.toSubscriptionDto(it, getUserType(userUuid, it), getTotalSumOfWallet(it.uuid, userUuid)) }
             .toList()
     }
 
-    fun getUserType(user: User, wallet: Wallet): WalletSubscriberType {
+    fun getUserType(userUuid: String, wallet: Wallet): WalletSubscriberType {
         when {
-            wallet.owner.uuid.equals(user.uuid) -> {
+            wallet.ownerUuid.equals(userUuid) -> {
                 return WalletSubscriberType.OWNER
             }
-            wallet.admins.contains(user) -> {
+            wallet.adminsUuid.contains(userUuid) -> {
                 return WalletSubscriberType.ADMIN
             }
-            wallet.users.contains(user) -> {
+            wallet.usersUuid.contains(userUuid) -> {
                 return  WalletSubscriberType.USER
             }
         }
         return WalletSubscriberType.UNRECOGNIZED
+    }
+
+    fun unsubscribeOfWallet(userUuid: String, walletUuid: String): String {
+        val wallet = walletRepository.findByUuid(walletUuid).orElseThrow()
+        if (wallet.adminsUuid.contains(userUuid)) {
+            wallet.adminsUuid.remove(userUuid)
+        } else if (wallet.usersUuid.contains(userUuid)) {
+            wallet.usersUuid.remove(userUuid)
+        } else {
+            return AnswerStatus.NO_PERMISSION.name
+        }
+        walletRepository.save(wallet)
+        return AnswerStatus.OK.name
+    }
+
+    fun editWalletInfo(userUuid: String, dto: EditWalletDto): String {
+        var user = userRepository.findByUuid(userUuid).orElseThrow()
+        val wallet = walletRepository.findByUuid(dto.uuid).orElseThrow()
+        if (wallet.usersUuid.contains(userUuid) ||
+            WalletSubscriberType.UNRECOGNIZED.equals(getUserType(userUuid, wallet))
+        ) {
+            return AnswerStatus.NO_PERMISSION.name
+        }
+        walletMapper.toEntity(dto, wallet)
+        walletRepository.save(wallet)
+        return AnswerStatus.OK.name
     }
 }

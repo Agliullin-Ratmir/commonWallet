@@ -10,4 +10,5 @@ import java.util.*
 
 @Repository
 interface InviteCodeRepository : MongoRepository<InviteCode, String> {
+    fun findByContent(content: String): Optional<InviteCode>
 }

@@ -1,10 +1,15 @@
 package common.wallet.first.controller
 
+import common.wallet.first.dto.CreateInviteCodeDto
+import common.wallet.first.dto.EditWalletDto
 import common.wallet.first.dto.InviteCodeDto
 import common.wallet.first.dto.RecordDto
+import common.wallet.first.dto.SubscribeDto
+import common.wallet.first.dto.UnsubscribeDto
 import common.wallet.first.dto.WalletCreateDto
 import common.wallet.first.dto.WalletDto
 import common.wallet.first.entity.Wallet
+import common.wallet.first.enum.WalletSubscriberType
 import common.wallet.first.service.InviteCodeService
 import common.wallet.first.service.UserService
 import common.wallet.first.service.WalletService
@@ -23,14 +28,14 @@ class WalletController @Autowired constructor(
         return walletService.createNewWallet(walletCreateDto)
     }
 
-    @GetMapping("recordsOfWallet")
-    fun createNewWallet(@RequestParam uuid : String): List<RecordDto> {
-        return walletService.getAllRecordsInWallet(uuid)
+    @PostMapping("recordsOfWallet")
+    fun getRecordsOfWallet(@RequestParam walletUuid : String, @RequestBody userUuid: String): List<RecordDto> {
+        return walletService.getAllRecordsInWallet(walletUuid, userUuid)
     }
 
-    @GetMapping("totalSum")
-    fun getTotalSumOfWallet(@RequestParam uuid : String): Double {
-        return walletService.getTotalSumOfWallet(uuid)
+    @PostMapping("totalSum")
+    fun getTotalSumOfWallet(@RequestParam walletUuid : String, @RequestBody userUuid: String): Double {
+        return walletService.getTotalSumOfWallet(walletUuid, userUuid)
     }
 
     @GetMapping("deleteWallet")
@@ -38,8 +43,26 @@ class WalletController @Autowired constructor(
         return walletService.deleteWallet(userUuid, walletUuid)
     }
 
+    @PostMapping("getInviteCode")
+    fun getInviteCode(@RequestBody item: CreateInviteCodeDto): InviteCodeDto {
+        return inviteCodeService.addNewInviteCode(
+            item.walletUuid, item.userStatus,
+            item.userUuid
+        )
+    }
+
     @PutMapping("subscribe")
-    fun subscribeToWallet(@RequestParam walletUuid : String): InviteCodeDto {
-        return inviteCodeService.addNewInviteCode(walletUuid)
+    fun subscribeToWallet(@RequestBody dto: SubscribeDto): Boolean {
+        return inviteCodeService.subscribeToWallet(dto.inviteCode, dto.userUuid)
+    }
+
+    @PutMapping("unsubscribe")
+    fun unsubscribeOfWallet(@RequestBody dto: UnsubscribeDto): String {
+        return walletService.unsubscribeOfWallet(dto.userUuid, dto.walletUuid)
+    }
+
+    @PutMapping("edit")
+    fun editWallet(@RequestParam userUuid : String, @RequestBody dto: EditWalletDto): String {
+        return walletService.editWalletInfo(userUuid, dto)
     }
 }

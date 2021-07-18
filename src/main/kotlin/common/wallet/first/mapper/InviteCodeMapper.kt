@@ -22,7 +22,8 @@ class InviteCodeMapper {
 
     fun toDto(code: InviteCode): InviteCodeDto {
         return InviteCodeDto(
-            content = code.content!!
+            content = code.content!!,
+            status = code.answerStatus
         )
     }
 }

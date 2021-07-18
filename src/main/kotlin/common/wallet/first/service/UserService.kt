@@ -49,7 +49,6 @@ class UserService @Autowired constructor(
     }
 
     fun getWalletsSubscriptions(uuid : String): List<WalletSubscriptionDto> {
-        val user = userRepository.findByUuid(uuid).get()
-        return walletService.getWalletsSubscriptions(user)
+        return walletService.getWalletsSubscriptions(uuid)
     }
 }

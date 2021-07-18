@@ -9,5 +9,6 @@ import java.util.*
 interface UserRepository : MongoRepository<User, String> {
     override fun findById(id: String): Optional<User>
     fun findByUuid(uuid: String): Optional<User>
+    fun findByUuidIsIn(uuids: MutableList<String>): MutableList<User>
     fun findByFirstName(firstName: String): Optional<User>
 }
