@@ -49,8 +49,8 @@ class RecordService @Autowired constructor(
         return recordMapper.toDto(record)
     }
 
-    fun deleteRecord(userUuid: String, recordUuid: String): String {
-        var record = recordRepository.findByUuid(recordUuid).orElseThrow()
+    fun deleteRecord(userUuid: String?, recordUuid: String?): String {
+        var record = recordRepository.findByUuid(recordUuid!!).orElseThrow()
         var wallet = walletRepository.findByUuid(record.walletUuid).orElseThrow()
         if (wallet.adminsUuid.contains(userUuid) ||
             (wallet.ownerUuid.equals(userUuid))) {

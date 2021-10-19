@@ -27,9 +27,16 @@ class InviteCodeService @Autowired constructor(
         val wallet = walletRepository.findByUuid(walletUuid).orElseThrow()
         var code = InviteCode()
         code.userStatus = WalletSubscriberType.valueOf(userStatus)
+        if (code.userStatus == WalletSubscriberType.OWNER) {
+            return InviteCodeDto("", AnswerStatus.NO_PERMISSION)
+        }
         code.walletUuid = walletUuid
-        if ((wallet.usersUuid.contains(userUuid) && WalletSubscriberType.ADMIN.name.equals(userStatus))
-            || WalletSubscriberType.UNRECOGNIZED.equals(walletService.getUserType(userUuid, wallet))) {
+        val subsType: WalletSubscriberType = walletService.getUserType(userUuid, wallet)
+        if (WalletSubscriberType.UNRECOGNIZED == subsType) {
+            return InviteCodeDto("", AnswerStatus.NO_PERMISSION)
+        }
+        if (wallet.usersUuid.contains(userUuid) && WalletSubscriberType.USER == subsType
+            && WalletSubscriberType.ADMIN.name.equals(userStatus)) {
             return InviteCodeDto("", AnswerStatus.NO_PERMISSION)
         }
         code.expiredDate = Instant.now().toEpochMilli() + MILL_SECONDS_IN_DAY.toLong()

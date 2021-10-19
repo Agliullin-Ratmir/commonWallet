@@ -6,7 +6,7 @@ import org.springframework.data.mongodb.repository.config.EnableMongoRepositorie
 
 @SpringBootApplication
 @EnableMongoRepositories("common.wallet.first.repository")
-class FirstApplication
+open class FirstApplication
 
 fun main(args: Array<String>) {
     runApplication<FirstApplication>(*args)

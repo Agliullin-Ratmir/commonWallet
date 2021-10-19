@@ -3,6 +3,7 @@ package common.wallet.first.controller
 import common.wallet.first.dto.EditRecordDto
 import common.wallet.first.dto.RecordCreateDto
 import common.wallet.first.dto.RecordDto
+import common.wallet.first.dto.RemoveRecordDto
 import common.wallet.first.service.RecordService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.*
@@ -17,9 +18,9 @@ class RecordController @Autowired constructor(
         return recordService.createNewRecord(recordCreateDto)
     }
 
-    @PutMapping("deleteRecord")
-    fun deleteRecord(@RequestBody userUuid: String, @RequestBody recordUuid: String) : String {
-        return recordService.deleteRecord(userUuid, recordUuid)
+    @PostMapping("deleteRecord")
+    fun deleteRecord(@RequestBody dto: RemoveRecordDto) : String {
+        return recordService.deleteRecord(dto.userUuid, dto.recordUuid)
     }
 
     @PostMapping("get")
