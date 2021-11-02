@@ -3,6 +3,7 @@ package common.wallet.first.mapper
 import common.wallet.first.dto.UserCreateDto
 import common.wallet.first.dto.UserDto
 import common.wallet.first.entity.User
+import common.wallet.first.enum.AnswerStatus
 import common.wallet.first.repository.UserRepository
 import common.wallet.first.repository.WalletRepository
 import org.springframework.beans.factory.annotation.Autowired
@@ -17,14 +18,24 @@ class UserMapper @Autowired constructor(
         return UserDto(
             id = user.id,
             uuid = user.uuid,
-            firstName = user.firstName,
-            lastName = user.lastName,
+            nickName = user.nickName,
+            status = AnswerStatus.OK,
             createdDate = user.createdDate
         )
     }
 
+    fun toNoPermissionDto(): UserDto {
+        return UserDto(
+            id = null,
+            uuid = null,
+            nickName = null,
+            status = AnswerStatus.NO_PERMISSION,
+            createdDate = null
+        )
+    }
+
     fun toEntity(user : UserCreateDto) : User {
-        return User(firstName = user.firstName,
-        lastName = user.lastName)
+        return User(nickName = user.nickName,
+        pinCode = user.pinCode)
     }
 }

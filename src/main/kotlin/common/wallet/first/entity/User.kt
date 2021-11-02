@@ -13,8 +13,8 @@ class User (
     var id: ObjectId = ObjectId.get(),
     @Indexed(unique = true)
     var uuid: String = UUID.randomUUID().toString(),
-    var firstName: String = "",
-    var lastName: String = "",
+    var nickName: String = "",
+    var pinCode: String = "",
     var createdDate: LocalDateTime = LocalDateTime.now()
 ) {
     override fun equals(other: Any?): Boolean{
@@ -24,8 +24,8 @@ class User (
         other as User
 
         if (!this.uuid.equals(other.uuid)) return false
-        if (!this.firstName.equals(other.firstName)) return false
-        if (!this.lastName.equals(other.lastName)) return false
+        if (!this.nickName.equals(other.nickName)) return false
+        if (!this.pinCode.equals(other.pinCode)) return false
 
         return true
     }

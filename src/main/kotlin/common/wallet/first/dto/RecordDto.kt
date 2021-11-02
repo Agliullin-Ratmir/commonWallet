@@ -8,7 +8,8 @@ import org.bson.types.ObjectId
 data class RecordDto(
     @JsonProperty("id") var id: ObjectId,
     @JsonProperty("uuid") var uuid: String,
-    @JsonProperty("user") var user: User,
+    @JsonProperty("userName") var userName: String,
+    @JsonProperty("userUuid") var userUuid: String,
     @JsonProperty("title") var title: String,
     @JsonProperty("sum") var sum: Double,
     @JsonProperty("details") var details: String,

@@ -1,9 +1,10 @@
 package common.wallet.first.controller
 
+import common.wallet.first.dto.AuthUserDto
 import common.wallet.first.dto.UserCreateDto
 import common.wallet.first.dto.UserDto
 import common.wallet.first.dto.WalletSubscriptionDto
-import common.wallet.first.entity.User
+import common.wallet.first.enum.AnswerStatus
 import common.wallet.first.service.UserService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.*
@@ -24,10 +25,15 @@ class UserController @Autowired constructor(
         return userService.createNewUser(userCreateDto)
     }
 
-    @GetMapping("find")
-    fun saveUser(@RequestParam firstName : String) : String {
-        return userService.getUserByFirstName(firstName).lastName
+    @PostMapping("auth")
+    fun authUser(@RequestBody authUserDto: AuthUserDto) : AnswerStatus {
+        return userService.authenticateUser(authUserDto)
     }
+
+//    @GetMapping("find")
+//    fun isNickNameAllowed(@RequestParam nickName : String) : AnswerStatus {
+//        return userService.isNickNameAllowed(nickName)
+//    }
 
     @GetMapping("totalSum")
     fun getTotalSum(@RequestParam uuid : String) : Double {

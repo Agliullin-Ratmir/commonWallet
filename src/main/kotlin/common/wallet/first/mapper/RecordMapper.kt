@@ -3,9 +3,7 @@ package common.wallet.first.mapper
 import common.wallet.first.dto.EditRecordDto
 import common.wallet.first.dto.RecordCreateDto
 import common.wallet.first.dto.RecordDto
-import common.wallet.first.dto.WalletDto
 import common.wallet.first.entity.Record
-import common.wallet.first.entity.Wallet
 import common.wallet.first.repository.UserRepository
 import common.wallet.first.repository.WalletRepository
 import org.springframework.beans.factory.annotation.Autowired
@@ -18,10 +16,12 @@ class RecordMapper @Autowired constructor(
 ) {
 
     fun toDto(record: Record): RecordDto {
+        val user = userRepository.findByUuid(record.userUuid).orElseThrow()
         return RecordDto(
             id = record.id,
             uuid = record.uuid,
-            user = userRepository.findByUuid(record.userUuid).orElseThrow(),
+            userName = user.nickName,
+            userUuid = user.uuid,
             title = record.title,
             sum = record.sum,
             details = record.details,
